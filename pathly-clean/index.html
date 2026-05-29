@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pathly — Find Your Best Education Path</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --teal:#1D9E75;--teal-light:#E1F5EE;--teal-mid:#5DCAA5;--teal-dark:#0F6E56;
+      --blue:#378ADD;--blue-light:#E6F1FB;
+      --amber:#BA7517;--amber-light:#FAEEDA;
+      --purple:#7F77DD;--purple-light:#EEEDFE;
+      --gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#E9ECEF;--gray-300:#DEE2E6;
+      --gray-500:#868E96;--gray-700:#495057;--gray-900:#212529;
+      --white:#FFFFFF;--shadow:0 2px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-900);background:var(--white);line-height:1.6}
+
+    /* ── NAV ── */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      background:rgba(255,255,255,.95);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--gray-200);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:.9rem 2.5rem;
+    }
+    .logo{display:flex;align-items:center;gap:.6rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:800;color:var(--teal)}
+    .logo-dot{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .logo-dot svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.5}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--gray-700);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--teal)}
+    .nav-actions{display:flex;gap:.75rem;align-items:center}
+    .btn-ghost{padding:.5rem 1.1rem;background:transparent;color:var(--gray-700);border:1.5px solid var(--gray-300);border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+    .btn-teal{padding:.5rem 1.25rem;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:.875rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-teal:hover{background:var(--teal-dark);transform:translateY(-1px)}
+
+    /* ── HERO ── */
+    .hero{
+      min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:7rem 2rem 4rem;text-align:center;
+      background:linear-gradient(180deg,var(--gray-50) 0%,#fff 100%);
+      position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+      width:800px;height:800px;border-radius:50%;
+      background:radial-gradient(circle,rgba(29,158,117,.08) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.4rem 1rem;background:var(--teal-light);border:1px solid rgba(29,158,117,.25);
+      border-radius:99px;color:var(--teal-dark);font-size:.78rem;font-weight:600;
+      margin-bottom:1.5rem;animation:fadeUp .5s ease both;
+    }
+    .hero h1{
+      font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.2rem,5.5vw,4rem);
+      font-weight:800;line-height:1.1;letter-spacing:-.03em;
+      max-width:760px;margin-bottom:1.25rem;color:var(--gray-900);
+      animation:fadeUp .55s .06s ease both;
+    }
+    .hero h1 span{color:var(--teal)}
+    .hero-sub{
+      color:var(--gray-500);font-size:1.1rem;max-width:540px;margin-bottom:2rem;
+      animation:fadeUp .6s .12s ease both;
+    }
+
+    /* ── EXPLORE FIRST: interactive career picker ── */
+    .hero-tool{
+      background:#fff;border:1.5px solid var(--gray-200);border-radius:20px;
+      padding:2rem;max-width:680px;width:100%;margin-bottom:1.5rem;
+      box-shadow:var(--shadow-lg);animation:fadeUp .65s .18s ease both;text-align:left;
+    }
+    .tool-label{font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+    .career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem;margin-bottom:1.25rem}
+    .career-btn{
+      padding:.6rem .75rem;background:var(--gray-50);border:1.5px solid var(--gray-200);
+      border-radius:10px;font-size:.82rem;font-weight:500;color:var(--gray-700);
+      cursor:pointer;transition:all .18s;text-align:left;
+    }
+    .career-btn:hover,.career-btn.active{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark);font-weight:600}
+    .path-preview{display:none;border-top:1px solid var(--gray-200);padding-top:1.25rem;margin-top:.25rem}
+    .path-preview.show{display:block}
+    .path-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+    .path-card{background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:12px;padding:1rem}
+    .path-card.best{background:var(--teal-light);border-color:var(--teal)}
+    .path-tag{font-size:.68rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+    .path-card.best .path-tag{color:var(--teal-dark)}
+    .path-name{font-size:.85rem;font-weight:700;color:var(--gray-900);margin-bottom:.75rem;line-height:1.3}
+    .path-stats{display:flex;flex-direction:column;gap:.35rem}
+    .stat-row{display:flex;justify-content:space-between;align-items:center}
+    .stat-label{font-size:.72rem;color:var(--gray-500)}
+    .stat-val{font-size:.78rem;font-weight:700}
+    .stat-val.green{color:var(--teal)}
+    .stat-val.amber{color:var(--amber)}
+    .stat-val.red{color:#E24B4A}
+    .preview-cta{margin-top:1rem;text-align:center}
+    .btn-teal-full{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.75rem 1.75rem;background:var(--teal);color:#fff;border:none;
+      border-radius:10px;font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;
+      transition:all .2s;
+    }
+    .btn-teal-full:hover{background:var(--teal-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(29,158,117,.3)}
+    .hero-note{color:var(--gray-500);font-size:.82rem;animation:fadeUp .7s .24s ease both}
+    .hero-note a{color:var(--teal);text-decoration:none;font-weight:600}
+    .hero-note a:hover{text-decoration:underline}
+
+    /* ── TRUST BAR ── */
+    .trust-bar{padding:1.75rem 2rem;background:#fff;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+    .trust-inner{max-width:900px;margin:0 auto;display:flex;justify-content:center;align-items:center;gap:3rem;flex-wrap:wrap}
+    .trust-item{display:flex;align-items:center;gap:.5rem;color:var(--gray-500);font-size:.85rem;font-weight:500}
+    .trust-item svg{width:18px;height:18px;stroke:var(--teal);fill:none;stroke-width:2;flex-shrink:0}
+    .trust-num{font-weight:800;color:var(--gray-900)}
+
+    /* ── HOW IT WORKS ── */
+    .section{padding:5rem 2rem}
+    .section-inner{max-width:1060px;margin:0 auto}
+    .section-tag{display:inline-block;background:var(--teal-light);color:var(--teal-dark);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .85rem;border-radius:99px;margin-bottom:.85rem}
+    .section-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:.75rem}
+    .section-sub{color:var(--gray-500);font-size:1rem;max-width:500px}
+
+    .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-top:2.5rem}
+    .step{background:#fff;border:1.5px solid var(--gray-200);border-radius:14px;padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
+    .step::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);opacity:0;transition:opacity .25s}
+    .step:hover{border-color:var(--teal);box-shadow:var(--shadow)}.step:hover::before{opacity:1}
+    .step-num{width:32px;height:32px;background:var(--teal-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:var(--teal-dark);margin-bottom:.85rem}
+    .step h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+    .step p{color:var(--gray-500);font-size:.85rem;line-height:1.6}
+
+    /* ── DASHBOARD PREVIEW ── */
+    .preview-section{background:var(--gray-50);border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+    .preview-layout{display:grid;grid-template-columns:240px 1fr;gap:1.5rem;margin-top:2.5rem;background:#fff;border:1.5px solid var(--gray-200);border-radius:16px;overflow:hidden}
+    .sidebar{background:var(--gray-50);border-right:1px solid var(--gray-200);padding:1.25rem}
+    .sidebar-title{font-size:.7rem;font-weight:800;color:var(--gray-500);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem}
+    .profile-card{background:#fff;border:1px solid var(--gray-200);border-radius:10px;padding:1rem;margin-bottom:1.25rem}
+    .profile-name{font-size:.9rem;font-weight:700;margin-bottom:.25rem}
+    .profile-detail{font-size:.78rem;color:var(--gray-500);line-height:1.7}
+    .profile-detail span{color:var(--teal-dark);font-weight:600}
+    .slider-group{margin-bottom:1rem}
+    .slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem}
+    .slider-name{font-size:.78rem;color:var(--gray-700);font-weight:500}
+    .slider-pct{font-size:.78rem;font-weight:700;color:var(--teal-dark)}
+    .slider-bar{height:5px;background:var(--gray-200);border-radius:3px;overflow:hidden}
+    .slider-fill{height:100%;background:var(--teal);border-radius:3px}
+    .main-panel{padding:1.25rem}
+    .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .panel-title{font-size:.85rem;font-weight:800;color:var(--gray-900);text-transform:uppercase;letter-spacing:.05em}
+    .filter-pills{display:flex;gap:.4rem}
+    .filter-pill{padding:.25rem .65rem;border:1px solid var(--gray-300);border-radius:99px;font-size:.7rem;font-weight:600;color:var(--gray-500);cursor:pointer}
+    .filter-pill.on{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark)}
+    .path-cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem}
+    .pcard{border:1.5px solid var(--gray-200);border-radius:12px;padding:1rem;background:#fff}
+    .pcard.recommended{border-color:var(--teal);background:rgba(29,158,117,.03)}
+    .pcard-label{font-size:.65rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
+    .pcard.recommended .pcard-label{color:var(--teal-dark)}
+    .pcard-name{font-size:.88rem;font-weight:700;color:var(--gray-900);line-height:1.3;margin-bottom:.1rem}
+    .pcard-sub{font-size:.72rem;color:var(--gray-500);margin-bottom:.75rem}
+    .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem}
+    .metric-box{border-radius:7px;padding:.5rem .6rem;text-align:center}
+    .metric-box.g{background:var(--teal-light)}
+    .metric-box.a{background:var(--amber-light)}
+    .metric-box.b{background:var(--blue-light)}
+    .metric-box.p{background:var(--purple-light)}
+    .metric-box .mv{font-size:.95rem;font-weight:800;color:var(--teal-dark)}
+    .metric-box.a .mv{color:var(--amber)}
+    .metric-box.b .mv{color:var(--blue)}
+    .metric-box.p .mv{color:var(--purple)}
+    .metric-box .ml{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500)}
+    .timeline{display:flex;align-items:center;gap:4px;margin-bottom:.75rem}
+    .tl-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--teal);background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .tl-dot svg{width:10px;height:10px;stroke:var(--teal);fill:none;stroke-width:2.5}
+    .tl-dot.filled{background:var(--teal)}
+    .tl-dot.filled svg{stroke:#fff}
+    .tl-line{flex:1;height:2px;background:var(--gray-300)}
+    .tl-line.done{background:var(--teal)}
+    .tl-label{font-size:.62rem;color:var(--gray-500);text-align:center;margin-top:.2rem}
+    .view-btn{width:100%;padding:.45rem;border:1.5px solid;border-radius:8px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s}
+    .view-btn.teal{border-color:var(--teal);color:var(--teal);background:transparent}
+    .view-btn.teal:hover{background:var(--teal);color:#fff}
+    .view-btn.gray{border-color:var(--gray-300);color:var(--gray-500);background:transparent}
+
+    /* ── FEATURES ── */
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:2.5rem}
+    .feat{display:flex;gap:1rem;align-items:flex-start}
+    .feat-icon{width:40px;height:40px;border-radius:10px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .feat-icon svg{width:20px;height:20px;stroke:var(--teal-dark);fill:none;stroke-width:2}
+    .feat-text h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+    .feat-text p{font-size:.85rem;color:var(--gray-500);line-height:1.65}
+
+    /* ── STATS ── */
+    .stats-band{background:var(--teal);padding:3.5rem 2rem}
+    .stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2rem;text-align:center}
+    .stat-big{color:#fff}
+    .stat-big .val{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.4rem;font-weight:800;display:block;line-height:1}
+    .stat-big .desc{font-size:.85rem;opacity:.85;margin-top:.4rem}
+
+    /* ── CTA ── */
+    .cta-section{padding:5rem 2rem;text-align:center;background:var(--gray-50)}
+    .cta-box{max-width:600px;margin:0 auto}
+    .cta-box h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;margin-bottom:.85rem}
+    .cta-box p{color:var(--gray-500);margin-bottom:2rem;font-size:1rem}
+    .cta-buttons{display:flex;gap:.85rem;justify-content:center;flex-wrap:wrap}
+    .btn-big{padding:.9rem 2rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
+    .btn-big.teal{background:var(--teal);color:#fff;border:none}
+    .btn-big.teal:hover{background:var(--teal-dark);transform:translateY(-2px);box-shadow:0 6px 24px rgba(29,158,117,.3)}
+    .btn-big.outline{background:#fff;color:var(--gray-700);border:1.5px solid var(--gray-300)}
+    .btn-big.outline:hover{border-color:var(--teal);color:var(--teal)}
+    .cta-note{margin-top:1rem;font-size:.82rem;color:var(--gray-500)}
+
+    /* ── FOOTER ── */
+    footer{padding:2rem 2.5rem;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#fff}
+    .footer-logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--teal)}
+    .footer-links{display:flex;gap:1.5rem}
+    .footer-links a{color:var(--gray-500);text-decoration:none;font-size:.82rem;transition:color .2s}
+    .footer-links a:hover{color:var(--teal)}
+    footer p{color:var(--gray-500);font-size:.8rem}
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    @media(max-width:700px){
+      nav{padding:.75rem 1.25rem}
+      .nav-links{display:none}
+      .path-cards{grid-template-columns:1fr}
+      .preview-layout{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .path-cards-row{grid-template-columns:1fr}
+      .career-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-dot">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    Pathly
+  </div>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#dashboard">Preview</a>
+    <a href="#features">Features</a>
+  </div>
+  <div class="nav-actions">
+    <a href="#sign-up" class="btn-ghost">Sign in</a>
+    <a href="#explore" class="btn-teal">Explore free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="explore">
+  <div class="hero-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    Free to explore — no sign-up needed
+  </div>
+  <h1>Find the <span>smartest path</span> to your career</h1>
+  <p class="hero-sub">Pick your dream career below and instantly see how different education paths compare on cost, time, and ROI — no account required.</p>
+
+  <!-- INTERACTIVE CAREER PICKER -->
+  <div class="hero-tool">
+    <div class="tool-label">👇 Pick your target career to see your pathways</div>
+    <div class="career-grid" id="careerGrid">
+      <button class="career-btn" onclick="showPaths(this,'Registered Nurse (RN)','$8,500','4 yrs','A+','$38,000','4 yrs','B+','$25,000','3 yrs','A-')">🏥 Registered Nurse</button>
+      <button class="career-btn" onclick="showPaths(this,'Software Engineer','$12,000','4 yrs','A+','$52,000','4 yrs','B','$18,000','3 yrs','A')">💻 Software Engineer</button>
+      <button class="career-btn" onclick="showPaths(this,'Cybersecurity Analyst','$11,500','4 yrs','A+','$48,000','4 yrs','B+','$22,000','3.5 yrs','A-')">🔒 Cybersecurity</button>
+      <button class="career-btn" onclick="showPaths(this,'Physical Therapist','$24,000','6 yrs','A','$85,000','6 yrs','B','$60,000','5 yrs','B+')">🦴 Physical Therapist</button>
+      <button class="career-btn" onclick="showPaths(this,'Accountant (CPA)','$9,500','4 yrs','A+','$42,000','4 yrs','B','$28,000','4 yrs','B+')">📊 Accountant (CPA)</button>
+      <button class="career-btn" onclick="showPaths(this,'Data Scientist','$13,000','4 yrs','A+','$55,000','4 yrs','B','$20,000','3 yrs','A')">📈 Data Scientist</button>
+      <button class="career-btn" onclick="showPaths(this,'Dental Hygienist','$7,200','2.5 yrs','A+','$38,000','4 yrs','B','—','—','—')">🦷 Dental Hygienist</button>
+      <button class="career-btn" onclick="showPaths(this,'Teacher (K-12)','$8,800','4 yrs','A','$42,000','4 yrs','B+','$30,000','3.5 yrs','B+')">📚 Teacher (K-12)</button>
+    </div>
+
+    <div class="path-preview" id="pathPreview">
+      <div style="margin-bottom:1rem">
+        <span style="font-size:.78rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.08em">Recommended Pathways for </span>
+        <span id="careerName" style="font-size:.85rem;font-weight:800;color:var(--teal-dark)"></span>
+      </div>
+      <div class="path-cards">
+        <!-- PATH 1 -->
+        <div class="path-card best">
+          <div class="path-tag">⭐ Path 1 — Best ROI</div>
+          <div class="path-name">Community College → University Transfer (2+2)</div>
+          <div class="path-stats">
+            <div class="stat-row"><span class="stat-label">Total est. debt</span><span class="stat-val green" id="p1debt"></span></div>
+            <div class="stat-row"><span class="stat-label">Graduation</span><span class="stat-val green" id="p1grad"></span></div>
+            <div class="stat-row"><span class="stat-label">Career ROI</span><span class="stat-val green" id="p1roi"></span></div>
+          </div>
+        </div>
+        <!-- PATH 2 -->
+        <div class="path-card">
+          <div class="path-tag">Path 2</div>
+          <div class="path-name">Direct 4-Year University</div>
+          <div class="path-stats">
+            <div class="stat-row"><span class="stat-label">Total est. debt</span><span class="stat-val amber" id="p2debt"></span></div>
+            <div class="stat-row"><span class="stat-label">Graduation</span><span class="stat-val amber" id="p2grad"></span></div>
+            <div class="stat-row"><span class="stat-label">Career ROI</span><span class="stat-val amber" id="p2roi"></span></div>
+          </div>
+        </div>
+        <!-- PATH 3 -->
+        <div class="path-card">
+          <div class="path-tag">Path 3</div>
+          <div class="path-name">Online / Accelerated Program</div>
+          <div class="path-stats">
+            <div class="stat-row"><span class="stat-label">Total est. debt</span><span class="stat-val red" id="p3debt"></span></div>
+            <div class="stat-row"><span class="stat-label">Graduation</span><span class="stat-val" id="p3grad"></span></div>
+            <div class="stat-row"><span class="stat-label">Career ROI</span><span class="stat-val" id="p3roi"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-cta">
+        <a href="#sign-up" class="btn-teal-full">
+          Get my full personalized plan →
+        </a>
+        <p style="font-size:.75rem;color:var(--gray-500);margin-top:.6rem">Takes 4 minutes · Free · No credit card</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="hero-note">Already have an account? <a href="#sign-up">Sign in here</a></p>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span><span class="trust-num">34+</span> institutions tracked</span>
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Avg <span class="trust-num">$42k</span> saved vs. direct 4-yr</span>
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span><span class="trust-num">6</span> scoring dimensions</span>
+    </div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      <span>No sign-up to explore</span>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">From first click to personalized plan</h2>
+      <p class="section-sub">Explore freely first. Only create an account when you're ready to save your results.</p>
+    </div>
+    <div class="steps-grid reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Pick your career</h3>
+        <p>Choose from 20 career paths. See BLS salary data, 10-year job growth, and whether your state requires licensing — instantly.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Add your schools</h3>
+        <p>Type any institution. Pathly detects CC + University combos and checks for formal transfer agreements automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Set your budget</h3>
+        <p>A smart slider filters out pathways that exceed your limit before you ever see them. FAFSA and Pell Grant options surfaced automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Enter your academics</h3>
+        <p>Your GPA unlocks scholarship tiers. Transfer credits show a live savings preview — every credit hour you've earned is money you won't borrow.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <h3>Get your dashboard</h3>
+        <p>Side-by-side pathway comparison across 6 dimensions, plus a semester-by-semester credit plan for your top path.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">06</div>
+        <h3>Save & share</h3>
+        <p>Create a free account to save your results, update your profile, and share your plan with family or advisors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<section class="section preview-section" id="dashboard">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Dashboard Preview</div>
+      <h2 class="section-title">This is what your results look like</h2>
+      <p class="section-sub">A real example for a student targeting Registered Nurse in Miami, FL.</p>
+    </div>
+    <div class="preview-layout reveal">
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sidebar-title">My Controls</div>
+        <div class="sidebar-title" style="font-size:.68rem;margin-top:0;margin-bottom:.5rem">Student Profile</div>
+        <div class="profile-card">
+          <div class="profile-name">Alisha M.</div>
+          <div class="profile-detail">
+            📍 Miami, FL<br>
+            GPA: <span>3.6</span><br>
+            Budget: <span>$15,000/yr</span><br>
+            Career: <span>Registered Nurse</span><br>
+            Schools: <span>MDC, FIU, USF</span>
+          </div>
+        </div>
+        <div class="sidebar-title" style="font-size:.68rem;margin-bottom:.65rem">Weight Preferences</div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-name">Low Debt</span><span class="slider-pct">90%</span></div>
+          <div class="slider-bar"><div class="slider-fill" style="width:90%"></div></div>
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-name">Fast Graduation</span><span class="slider-pct">60%</span></div>
+          <div class="slider-bar"><div class="slider-fill" style="width:60%"></div></div>
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-name">Easy Transfer</span><span class="slider-pct">85%</span></div>
+          <div class="slider-bar"><div class="slider-fill" style="width:85%"></div></div>
+        </div>
+        <div class="slider-group">
+          <div class="slider-row"><span class="slider-name">High ROI</span><span class="slider-pct">70%</span></div>
+          <div class="slider-bar"><div class="slider-fill" style="width:70%"></div></div>
+        </div>
+        <div class="sidebar-title" style="font-size:.68rem;margin-top:.5rem;margin-bottom:.5rem">Filters</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span style="padding:.2rem .6rem;background:var(--teal-light);border:1px solid var(--teal);border-radius:6px;font-size:.7rem;color:var(--teal-dark);font-weight:600">✓ In-Person</span>
+          <span style="padding:.2rem .6rem;background:#fff;border:1px solid var(--gray-300);border-radius:6px;font-size:.7rem;color:var(--gray-500)">Online</span>
+          <span style="padding:.2rem .6rem;background:#fff;border:1px solid var(--gray-300);border-radius:6px;font-size:.7rem;color:var(--gray-500)">Hybrid</span>
+        </div>
+      </div>
+
+      <!-- MAIN PANEL -->
+      <div class="main-panel">
+        <div class="panel-header">
+          <div class="panel-title">Recommended Pathways</div>
+          <div class="filter-pills">
+            <span class="filter-pill on">All</span>
+            <span class="filter-pill">Nursing</span>
+            <span class="filter-pill">FL Only</span>
+          </div>
+        </div>
+        <div class="path-cards-row">
+          <!-- CARD 1 -->
+          <div class="pcard recommended">
+            <div class="pcard-label">⭐ Path 1 — Recommended</div>
+            <div class="pcard-name">Community College to University Transfer (2+2)</div>
+            <div class="pcard-sub">Miami Dade College → Florida International University</div>
+            <div class="metric-grid">
+              <div class="metric-box g"><div class="mv">$8,500</div><div class="ml">Total Debt</div></div>
+              <div class="metric-box g"><div class="mv">4 Years</div><div class="ml">Graduation</div></div>
+              <div class="metric-box g"><div class="mv">YES</div><div class="ml">Licensing Met</div></div>
+              <div class="metric-box g"><div class="mv">A+</div><div class="ml">Career ROI</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--gray-500);margin-bottom:.3rem">
+              <span>Years 1-2 (MDC)</span><span>Years 3-4 (FIU)</span>
+            </div>
+            <div class="timeline">
+              <div class="tl-dot filled"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-7 10 7M5 9.5v9.5a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9.5"/></svg></div>
+              <div class="tl-line done"></div>
+              <div class="tl-dot filled"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+              <div class="tl-line done"></div>
+              <div class="tl-dot"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+            </div>
+            <button class="view-btn teal">View Details</button>
+          </div>
+          <!-- CARD 2 -->
+          <div class="pcard">
+            <div class="pcard-label">Path 2</div>
+            <div class="pcard-name">Direct 4-Year University</div>
+            <div class="pcard-sub">University of Central Florida</div>
+            <div class="metric-grid">
+              <div class="metric-box a"><div class="mv" style="color:var(--amber)">$38,000</div><div class="ml">Total Debt</div></div>
+              <div class="metric-box g"><div class="mv">4 Years</div><div class="ml">Graduation</div></div>
+              <div class="metric-box g"><div class="mv">YES</div><div class="ml">Licensing Met</div></div>
+              <div class="metric-box a"><div class="mv" style="color:var(--amber)">B+</div><div class="ml">Career ROI</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--gray-500);margin-bottom:.3rem">
+              <span>1 Year</span><span>2 Years</span><span>3 Years</span><span>4 Years</span>
+            </div>
+            <div class="timeline">
+              <div class="tl-dot filled" style="border-color:var(--amber);background:var(--amber)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+              <div class="tl-line" style="background:var(--amber)"></div>
+              <div class="tl-dot filled" style="border-color:var(--amber);background:var(--amber)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+              <div class="tl-line" style="background:var(--amber)"></div>
+              <div class="tl-dot" style="border-color:var(--amber)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+            </div>
+            <button class="view-btn gray">View Details</button>
+          </div>
+          <!-- CARD 3 -->
+          <div class="pcard">
+            <div class="pcard-label">Path 3</div>
+            <div class="pcard-name">Online Accelerated BSN</div>
+            <div class="pcard-sub">Target Online Institution</div>
+            <div class="metric-grid">
+              <div class="metric-box b"><div class="mv" style="color:var(--blue)">$25,000</div><div class="ml">Total Debt</div></div>
+              <div class="metric-box g"><div class="mv">3 Years</div><div class="ml">Graduation</div></div>
+              <div class="metric-box g"><div class="mv">YES</div><div class="ml">Licensing Met</div></div>
+              <div class="metric-box p"><div class="mv" style="color:var(--purple)">A-</div><div class="ml">Career ROI</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--gray-500);margin-bottom:.3rem">
+              <span>1 Year</span><span>2 Years</span><span>3 Years</span>
+            </div>
+            <div class="timeline">
+              <div class="tl-dot filled" style="border-color:var(--blue);background:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+              <div class="tl-line" style="background:var(--blue)"></div>
+              <div class="tl-dot filled" style="border-color:var(--blue);background:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+              <div class="tl-line" style="background:var(--blue)"></div>
+              <div class="tl-dot" style="border-color:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg></div>
+            </div>
+            <button class="view-btn gray">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Features</div>
+      <h2 class="section-title">Everything you need in one place</h2>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
+        <div class="feat-text"><h3>Transfer articulation engine</h3><p>Cross-references formal 2+2 agreements between community colleges and universities. Flags formal, TAG, case-by-case, or no agreement.</p></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div>
+        <div class="feat-text"><h3>Semester-by-semester credit plan</h3><p>Check off courses as you complete them. Live cumulative debt tracker updates in real time. Milestone markers for transfer and graduation.</p></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg></div>
+        <div class="feat-text"><h3>State licensing compliance</h3><p>Validates every pathway against your state board for nursing, teaching, social work, and other regulated professions.</p></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="feat-text"><h3>Scholarship match engine</h3><p>Surfaces Pell Grants, Bright Futures, merit scholarships filtered by your GPA, state, and career. Shows exact eligibility requirements.</p></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+        <div class="feat-text"><h3>10-year ROI projections</h3><p>Interactive charts comparing debt accumulation, annual cost, and 10-year earnings vs. total investment across all pathways side by side.</p></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+        <div class="feat-text"><h3>Built for Florida students</h3><p>34+ FL institutions seeded with real transfer articulation data. MDC, FIU, USF, UCF, UF, FAU — all cross-referenced and verified.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stats-inner">
+    <div class="stat-big"><span class="val">40–60%</span><div class="desc">Average debt reduction via CC transfer path</div></div>
+    <div class="stat-big"><span class="val">$7,395</span><div class="desc">Max annual Pell Grant — free money, no repayment</div></div>
+    <div class="stat-big"><span class="val">4 min</span><div class="desc">Average time to complete your full profile</div></div>
+    <div class="stat-big"><span class="val">34+</span><div class="desc">FL institutions with real transfer data</div></div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="sign-up">
+  <div class="cta-box reveal">
+    <h2>Ready to find your highest-ROI path?</h2>
+    <p>Takes 4 minutes. Explore free without an account — create one only when you're ready to save your personalized plan.</p>
+    <div class="cta-buttons">
+      <a href="src/app/onboarding/page.tsx" class="btn-big teal">Start exploring free →</a>
+      <a href="#explore" class="btn-big outline">See example pathways</a>
+    </div>
+    <p class="cta-note">No credit card · No sign-up required to explore · Free forever tier available</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Pathly</div>
+  <p>© 2026 Pathly · Helping students make smarter education decisions</p>
+  <div class="footer-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#dashboard">Preview</a>
+    <a href="#features">Features</a>
+    <a href="PATHLY_MASTER.md">Source code</a>
+  </div>
+</footer>
+
+<script>
+function showPaths(btn, career, p1d, p1g, p1r, p2d, p2g, p2r, p3d, p3g, p3r) {
+  document.querySelectorAll('.career-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('careerName').textContent = career;
+  document.getElementById('p1debt').textContent = p1d;
+  document.getElementById('p1grad').textContent = p1g;
+  document.getElementById('p1roi').textContent  = p1r;
+  document.getElementById('p2debt').textContent = p2d;
+  document.getElementById('p2grad').textContent = p2g;
+  document.getElementById('p2roi').textContent  = p2r;
+  document.getElementById('p3debt').textContent = p3d;
+  document.getElementById('p3grad').textContent = p3g;
+  document.getElementById('p3roi').textContent  = p3r;
+  var preview = document.getElementById('pathPreview');
+  preview.classList.add('show');
+  preview.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+</script>
+</body>
+</html>
